@@ -1,0 +1,27 @@
+desc:"minimal file structure for the base of a simple webpage"
+
+def:header="
+<!DOCTYPE html>
+
+<html lang=\"en\">
+    <head>
+        <meta charset=\"UTF-8\">
+        <title></title>
+    </head>
+
+    <body>
+    </body>
+</html>
+"
+
+dir:%NAME% {
+    file(pre:"%header%"):index.html
+    dir:css {
+        file:index.css
+    }
+    dir:resource {
+        dir:image {
+            dir:icon
+        }
+    }
+}

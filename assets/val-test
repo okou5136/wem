@@ -1,0 +1,22 @@
+desc:"variable feature test"
+
+def:{
+    x = file_a
+
+    y = file_in_file_a
+
+    pretext_for_file = pretext_inside_val
+
+}
+
+
+dir:%NAME% {
+    dir:%x%{
+        dir:%y%
+    }
+    file:just_a_file
+    file(pre:%pretext_for_file%):file_with_pre
+    dir: second-file {
+        file(pre:%pretext_for_file%):file_in_second_file
+    }
+}

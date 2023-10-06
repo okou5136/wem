@@ -1,0 +1,11 @@
+desc:"just for test. contains every combination of commands that this program can possibly generate"
+
+
+dir:%NAME% { 
+        file:%NAME%-created-in-%DATE%
+        file(pre:"text in text"):text
+        dir:file-inside-%NAME%
+        dir:file-inside-of-%NAME%-2 {
+            file(pre:"text file inside the file"):some-file
+        }
+}

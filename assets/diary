@@ -1,0 +1,5 @@
+desc:"
+    single diary with the date
+"
+
+file:%DATE%

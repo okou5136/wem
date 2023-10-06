@@ -1,0 +1,15 @@
+desc:"simple file structure for note taking with Org-mode"
+
+def: name = "Daniel Abendschein"
+
+def: metadates = "
+#+title:
+#+author: %name%
+#+date: %DATE%
+"
+
+dir:%NAME% {
+    file(pre:"%metadates%"):%NAME%.org
+
+    dir:latex
+}

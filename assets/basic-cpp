@@ -1,0 +1,24 @@
+desc:"basic structure of cpp program"
+def:make_header="
+CC = g++
+CFLAGS =
+SOURCES = ./src/%NAME%.c
+DESTINATION = ./exe/%NAME%
+
+all: comp run clean
+
+comp: 
+    $(CC) $(SOURCES) -o $(DESTINATION) $(CFLAGS)
+run:
+    $(DESTINATION)
+clean:
+    rm $(DESTINATION)
+"
+
+dir:%NAME% {
+    dir:src {
+        file(pre:"#include <>"):%NAME%.cpp:QW
+    }
+    dir:exe
+    file(pre:"%make_header%"):makefile
+}
