@@ -1,0 +1,12 @@
+/home/normie/documents/program/rs/workinprogress/wem/target/debug/deps/anstyle-db13c22de4de01c3.rmeta: /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/lib.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/macros.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/color.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/effect.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/reset.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/style.rs
+
+/home/normie/documents/program/rs/workinprogress/wem/target/debug/deps/libanstyle-db13c22de4de01c3.rlib: /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/lib.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/macros.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/color.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/effect.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/reset.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/style.rs
+
+/home/normie/documents/program/rs/workinprogress/wem/target/debug/deps/anstyle-db13c22de4de01c3.d: /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/lib.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/macros.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/color.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/effect.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/reset.rs /home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/style.rs
+
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/lib.rs:
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/macros.rs:
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/color.rs:
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/effect.rs:
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/reset.rs:
+/home/normie/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-1.0.3/src/style.rs:

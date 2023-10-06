@@ -1,0 +1,1 @@
+/home/normie/documents/program/rs/workinprogress/wem/target/release/wem: /home/normie/documents/program/rs/workinprogress/wem/src/main.rs /home/normie/documents/program/rs/workinprogress/wem/src/org_struct.rs /home/normie/documents/program/rs/workinprogress/wem/src/search_org.rs
