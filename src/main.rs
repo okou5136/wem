@@ -83,8 +83,7 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
                 return Err(anyhow::anyhow!("Syntax error occurred during parsing variables:
                                            \nthe command \"def\" could not detect \":\""));               
             }
-
-        }
+        } 
         i += 1;
     }
 
@@ -376,7 +375,7 @@ fn main() -> anyhow::Result<()> {
         },
     }
 
-    if let Ok(lines) = read_file(format!("{}/{}",make_arg.ref_src ,make_arg.ref_name)) {
+    if let Ok(lines) = read_file(format!("{}/{}", make_arg.ref_src, make_arg.ref_name)) {
         for line in lines {
             if let Ok(string_line) = line {
                 lex.push(string_line);

@@ -1,5 +1,6 @@
 desc:"basic structure of cpp program"
-def:make_header="
+def:make_header=
+"
 CC = g++
 CFLAGS =
 SOURCES = ./src/%NAME%.c

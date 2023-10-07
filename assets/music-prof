@@ -1,7 +1,5 @@
 desc:"creates a directory with single text file to put the discography of a musician"
 
 dir:%NAME% {
-    file(pre:"
-    background:
-    "):about
+    file(pre:"background: "):about
 }

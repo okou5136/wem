@@ -1,7 +1,7 @@
 desc:"generates basic c file structure"
 
-def:make_header="
-CC = gcc
+def:make_header=
+"CC = gcc
 CFLAGS = 
 SOURCES = ./src/%NAME%.c
 DESTINATION = ./exe/%NAME%
@@ -18,7 +18,7 @@ clean:
 
 dir:%NAME% {
     dir:src {
-        file(pre:"#include <>\n"):%NAME%.c
+        file(pre:"#include <>"):%NAME%.c
     }
     dir:exe
     file(pre:"%make_header%"):makefile

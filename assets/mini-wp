@@ -1,8 +1,8 @@
 desc:"file structure for a segment of webpage"
 
 def: {
-    header="
-    	<!DOCTYPE html>
+    header=
+    "<!DOCTYPE html>
     <html lang="en">
     	<head>
     		<meta charset="UTF-8">
@@ -12,7 +12,7 @@ def: {
 
     	</body>
     </html>
-    ",
+    "
 }
 
 dir:%NAME% {
