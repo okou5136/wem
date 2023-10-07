@@ -6,11 +6,9 @@ This program was supposed to be the improved version of Wirease, a file generati
 and this is where the name "Wirease iMproved" came from.
 What this program basically does is to generate a filesystem based on a simple script called "wem script".
 the intention of this program is:
-```
-Automate the process of manually creating a bunch of files
-Reduce typos and increase the stability
-Increase the time effeciency
-```
+- Automate the process of manually creating a bunch of files
+- Reduce typos and increase the stability
+- Increase the time effeciency
 
 # How to use it
 
