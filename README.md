@@ -13,7 +13,7 @@ the intention of this program is:
 # How to use this program
 1. To create a filesystem named *my_note* using a wem script *note_tmpl*
 ```
-wem make note my_note
+wem make note_tmpl my_note
 ```
 - Further more:
 To specify the asset file, use -s/--source option
@@ -27,16 +27,16 @@ commands used in wem script mainly consist of (with a few exceptions) two things
 - name
 
 these are separated with **:** like so:
-command:name
+<p>command:name</p>
 
-in some cases, there could be extra things after this e.g. *{*, *=*,
-additionally, some command line *file* can have possible subcommands e.g. *pre*
+in some cases, there could be extra things after this e.g. **{**, **=**.
+additionally, some commands like **file** can have subcommands e.g. **pre**.
 
 1. To create a directory, use dir command
 ```
 dir:your_directorys_name
 ```
- - if you want to nest the file, use *{*:
+ - if you want to nest the file, use **{**:
  ```
  dir:your_directorys_name {
      // some process ...
@@ -47,14 +47,13 @@ dir:your_directorys_name
  dir:your_directorys_name{ // some process ... }
  ```
   - for readability's sake, 
-  it is recommended that the number of the process(es) is as small as possible (preferably one)
-  in this form
+  it is recommended that the number of the process(es) in this form is as small as possible (preferably one)
 
 2. To create a file, use file command
 ```
 file:your_files_name
 ```
- - this command can take *pre* as subcommand:
+ - this command can take **pre** as subcommand:
  ```
  file(pre:your_pretext):your_files_name
  ```
@@ -63,7 +62,7 @@ file:your_files_name
 ```
 def:your_vars_name = val_inside_of_var
 ```
- - this command uses *=* after the name of variable to insert value to the variable
+ - this command uses **=** after the name of variable to insert value to it
  - you can define multiple variables at once:
  ```
  def:{
