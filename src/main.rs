@@ -1,8 +1,11 @@
 mod wem_structure;
 mod search_org;
+mod arg;
 
+use arg::*;
 use wem_structure::*;
 
+use serde_yaml::{ self };
 use anyhow::Context;
 use chrono;
 use std::env;
@@ -12,27 +15,6 @@ use std::path::Path;
 use std::collections::*;
 use std::time::Instant;
 use clap::Parser;
-
-
-#[derive(Parser)]
-struct Arguments {
-    reference_name: String,
-
-    project_name: String,
-
-    #[clap(short='s', long="source", default_value="/home/normie/documents/program/rs/workinprogress/wem/assets")]
-
-    reference_source: String,
-
-    #[clap(short='t', long="time-format", default_value="%Y-%m-%d")]
-    time_format: String,
-
-    #[clap(short='o', long="output")]
-    output: Option<String>,
-
-    #[clap(short='m', long="mode")]
-    mode: Option<String>,
-}
 
 //read lexed lines and extract the variable datas
 fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>> {
@@ -110,8 +92,8 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
 }
 
 //parse the lexed lines and substitute the strings
-fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>) -> anyhow::Result<Vec<String>> {
-    let arg = Arguments::parse();
+fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>, arg: &MakeArg) -> anyhow::Result<Vec<String>> {
+    //let arg = Arguments::parse();
     let mut result: Vec<String> = Vec::new();
     let mut line = String::new();
     let mut i = 0usize;
@@ -127,11 +109,11 @@ fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>) -> any
                     i += 1;
                 }
                 if temp_card == "NAME".to_string() {
-                    line.push_str(arg.project_name.as_str());
+                    line.push_str(arg.pro_name.as_str());
                     temp_card = String::new();
                 } 
                 else if temp_card == "DATE".to_string() {
-                    line.push_str(format!("{}", chrono::Local::now().format(&arg.time_format)).as_str());
+                    line.push_str(format!("{}", chrono::Local::now().format(&arg.time_fmt)).as_str());
                     temp_card = String::new();
                 }
                 else if temp_card == "DQ".to_string() {
@@ -350,15 +332,51 @@ fn exec(commands: Vec<ExecInfo>) -> anyhow::Result<()> {
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
+    let mut make_arg = MakeArg::new();
     let mut lex: Vec<String> = Vec::new();
     let now = Instant::now();
     let mode = match arg.mode {
         Some(x) => x,
         None => String::new(),
     };
+    let conf_path = match arg.conf_path {
+        Some(x) => x,
+        None => String::from("/home/normie/documents/program/rs/workinprogress/wem/config.yml"),
+    };
 
+    let config:Config = serde_yaml::from_reader(File::open(conf_path).with_context(|| format!("failed to open config file"))?)
+        .with_context(|| format!("failed to read config file"))?;
 
-    if let Ok(lines) = read_file(format!("{}/{}",arg.reference_source ,arg.reference_name)) {
+    println!("{:?}", config.clone());
+    match arg.act {
+        Move::Make(command) => {
+            make_arg = MakeArg::from(command.reference_name,
+                                         command.project_name,
+                                         if let Some(ref_path) = command.reference_source {
+                                             ref_path
+                                         } else {
+                                             config.reference_path
+                                         },
+                                         if let Some(format) = command.time_format {
+                                             format
+                                         } else {
+                                             config.time_format
+                                         },
+                                         command.output
+                                         );
+        },
+
+        Move::List(command) => {
+            let reference = if let Some(ref_path) = command.ref_dir {
+                ref_path
+            } else {
+                config.reference_path
+            };
+            println!("list: {}", reference);
+        },
+    }
+
+    if let Ok(lines) = read_file(format!("{}/{}",make_arg.ref_src ,make_arg.ref_name)) {
         for line in lines {
             if let Ok(string_line) = line {
                 lex.push(string_line);
@@ -390,7 +408,7 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    let lexed = val_parser(&lexed, &variables)?;
+    let lexed = val_parser(&lexed, &variables, &make_arg)?;
 
     if mode.contains("debug") {
         println!("\nlexed lines(variable substituted): ");
@@ -399,11 +417,11 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    let parsed = parser(lexed, arg.output)?;
+    let parsed = parser(lexed, make_arg.clone().output)?;
 
     let parsed = parsed.iter()
         .map(|x| x.from_pre(
-                if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables).ok() {
+                if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
                     y
                 } else {
                     vec![String::from("Error pretext")]

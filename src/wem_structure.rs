@@ -1,3 +1,5 @@
+use serde::{ Serialize, Deserialize };
+
 #[derive(Clone)]
 pub enum Actions {
     DIR,
@@ -28,6 +30,66 @@ impl ExecInfo {
             name: self.name.clone(),
             location: self.location.clone(),
             pretext: prefrom.join("").to_string(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
+pub struct MakeArg {
+    pub ref_name: String,
+    pub pro_name: String,
+    pub ref_src: String,
+    pub time_fmt: String,
+    pub output: Option<String>,
+}
+
+impl MakeArg {
+    pub fn new() -> MakeArg {
+        MakeArg {
+            ref_name: String::new(),
+            pro_name: String::new(),
+            ref_src:  String::new(),
+            time_fmt: String::new(),
+            output:   None,
+        }
+    }
+
+    pub fn from(reference_name: String,
+                project_name: String,
+                reference_src:  String,
+                time_format: String,
+                out:   Option<String>,
+                ) -> MakeArg 
+    {
+        MakeArg {
+            ref_name: reference_name,
+            pro_name: project_name,
+            ref_src:  reference_src,
+            time_fmt: time_format,
+            output:   out,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Config {
+    pub reference_path: String,
+    pub time_format: String,
+}
+
+impl Config {
+    pub fn new() -> Config {
+        Config {
+            reference_path: String::new(),
+            time_format: String::new(),
+        }
+    }
+
+    pub fn from(reference_src:  String,
+                time_fmt: String,) -> Config
+    {
+        Config {
+            reference_path: reference_src,
+            time_format: time_fmt,
         }
     }
 }
