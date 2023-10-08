@@ -411,10 +411,20 @@ fn display_reference(ref_path: &String) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn try_open_files(pathvec: Vec<String>) -> anyhow::Result<File> {
+    for path in pathvec {
+        if let Ok(content) = File::open(path) {
+            return Ok(content);
+        }
+    }
+
+    return Err(anyhow::anyhow!("could not find any config files"));
+}
+
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
-    //let mut make_arg = MakeArg::new();
+    let home = env::var("HOME")?;
     let make_arg: MakeArg;
     let mut lex: Vec<String> = Vec::new();
     let now = Instant::now();
@@ -422,12 +432,14 @@ fn main() -> anyhow::Result<()> {
         Some(x) => x,
         None => String::new(),
     };
-    let conf_path = match arg.conf_path {
-        Some(x) => x,
-        None => String::from("/home/normie/documents/program/rs/workinprogress/wem/config.yml"),
+    let conf_path: Vec<String> = match arg.conf_path {
+        Some(x) => vec![x],
+        None => vec!["/home/normie/documents/program/rs/workinprogress/wem/config.yml".to_string(),
+                          format!("{}/.wenconf.yml", home),
+                          format!("{}/.config/wem/config.yml", home)],
     };
 
-    let config:Config = serde_yaml::from_reader(File::open(conf_path).with_context(|| format!("failed to open config file"))?)
+    let config:Config = serde_yaml::from_reader(try_open_files(conf_path)?)
         .with_context(|| format!("failed to read config file"))?;
 
     println!("{:?}", config.clone());
