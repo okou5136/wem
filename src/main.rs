@@ -286,7 +286,7 @@ fn lexer(unlexed: Vec<String>) -> anyhow::Result<Vec<String>> {
         res_pos += 1;
     }
 
-    res_pos = 0usize;
+    //res_pos = 0usize;
     dq_ind = false;
     result.push(String::new());
     for string in cut_lex {
@@ -414,7 +414,8 @@ fn display_reference(ref_path: &String) -> anyhow::Result<()> {
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
-    let mut make_arg = MakeArg::new();
+    //let mut make_arg = MakeArg::new();
+    let make_arg: MakeArg;
     let mut lex: Vec<String> = Vec::new();
     let now = Instant::now();
     let mode = match arg.mode {
@@ -449,7 +450,7 @@ fn main() -> anyhow::Result<()> {
         },
 
         Move::List(command) => {
-            let reference = if let Some(ref_path) = command.ref_dir {
+            let reference = if let Some(ref_path) = command.reference_path {
                 ref_path
             } else {
                 config.reference_path

@@ -43,15 +43,18 @@ pub struct MakeArg {
 }
 
 impl MakeArg {
-    pub fn new() -> MakeArg {
-        MakeArg {
-            ref_name: String::new(),
-            pro_name: String::new(),
-            ref_src:  String::new(),
-            time_fmt: String::new(),
-            output:   None,
-        }
-    }
+    // this function would come in handy later on.
+    // but i don't use for now, therefore commented out.
+    // ( sorry for my bad code :< )
+//    pub fn new() -> MakeArg {
+//        MakeArg {
+//            ref_name: String::new(),
+//            pro_name: String::new(),
+//            ref_src:  String::new(),
+//            time_fmt: String::new(),
+//            output:   None,
+//        }
+//    }
 
     pub fn from(reference_name: String,
                 project_name: String,
@@ -76,23 +79,26 @@ pub struct Config {
     pub time_format: String,
 }
 
-impl Config {
-    pub fn new() -> Config {
-        Config {
-            reference_path: String::new(),
-            time_format: String::new(),
-        }
-    }
-
-    pub fn from(reference_src:  String,
-                time_fmt: String,) -> Config
-    {
-        Config {
-            reference_path: reference_src,
-            time_format: time_fmt,
-        }
-    }
-}
+    // this function would come in handy later on.
+    // but i don't use for now, therefore commented out.
+    // ( sorry for my bad code :< )
+//impl Config {
+//    pub fn new() -> Config {
+//        Config {
+//            reference_path: String::new(),
+//            time_format: String::new(),
+//        }
+//    }
+//
+//    pub fn from(reference_src:  String,
+//                time_fmt: String,) -> Config
+//    {
+//        Config {
+//            reference_path: reference_src,
+//            time_format: time_fmt,
+//        }
+//    }
+//}
 
 pub struct VarInfo {
     pub name: String,
