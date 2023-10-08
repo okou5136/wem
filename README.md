@@ -74,3 +74,4 @@ def:your_vars_name = val_inside_of_var
 
 # Future plans
 - add ref command to excerpt values from other file
+- translate wem script to makefile and .make
