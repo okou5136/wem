@@ -328,6 +328,89 @@ fn exec(commands: Vec<ExecInfo>) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn desc_parser(lex: Vec<String>) -> anyhow::Result<String> {
+    let mut desc = String::new();
+    let mut i = 0usize;
+
+    while lex.len() > i {
+        if lex[i] == "desc".to_string() {
+            i += 1;
+            if lex[i] == ":" {
+                i += 1;
+                if lex[i] == "\"" {
+                    i += 1;
+                    while lex[i] != "\"".to_string() {
+                        desc.push_str(&lex[i]);
+                        desc.push('\n');
+                        i += 1;
+                    }
+                    desc = desc.trim_end().to_string();
+                    i += 1;
+                } else {
+                    desc.push_str(&lex[i]);
+                    i += 1;
+                }
+            } 
+            else if lex[i] == "(" {
+                return Err(anyhow::anyhow!("command \"desc\" does't support subcommand"));
+            } else {
+                return Err(anyhow::anyhow!("invalid syntax:\ncommand \"desc\" needs\':\' after it"));
+            }
+        }
+        i += 1;
+    }
+
+    return Ok(desc);
+}
+
+fn display_reference(ref_path: &String) -> anyhow::Result<()> {
+    let path_crst = fs::read_dir(ref_path)?;
+    let mut filenames: Vec<String> = Vec::new();
+    let mut file_content: Vec<String> = Vec::new();
+    let mut desc: Vec<String> = Vec::new();
+    let mut spaces: usize = 0;
+    let mut i: usize = 0;
+
+    for path in path_crst {
+        filenames.push(path.unwrap().path().display().to_string());
+    }
+
+    
+    for file in &filenames {
+        if let Ok(lines) = read_file(file) {
+            for line in lines {
+                if let Ok(code) = line {
+                    file_content.push(code);
+                }
+            }
+        } else {
+            return Err(anyhow::anyhow!("failed to find the specified file"));
+        }
+        file_content = lexer(file_content)?;
+        desc.push(desc_parser(file_content)?.trim().to_string());
+        file_content = Vec::new();
+    }
+
+    for file in &filenames {
+        if file.len() > spaces {
+            spaces = file.len();
+        }
+    }
+
+    println!("from {}", ref_path);
+    for file in &filenames {
+        print!("{}:", Path::new(file).file_name().and_then(|s| s.to_str())
+               .with_context(|| format!("failed to obtain file name"))?);
+        for _ in 0..(spaces + 2 - file.len()) {
+            print!(" ");
+        }
+
+        println!("{}", desc[i]);
+        i += 1;
+    }
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
@@ -371,7 +454,8 @@ fn main() -> anyhow::Result<()> {
             } else {
                 config.reference_path
             };
-            println!("list: {}", reference);
+            display_reference(&reference)?;
+            return Ok(());
         },
     }
 
