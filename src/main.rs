@@ -155,18 +155,39 @@ fn parser(original: Vec<String>, strt_path: Option<String>) -> anyhow::Result<Ve
 
             prexec.location = path.join("/");
             prexec.action = Actions::DIR;
-            if original[i] == ":" {
-                i += 1;
-                prexec.name.push_str(&original[i]);
+           // if original[i] == ":" {
+           //     i += 1;
+           //     prexec.name.push_str(&original[i]);
 
-                if original[i + 1] == "{" {
-                    i += 1;
-                    indent += 1;
-                    path.push(prexec.name.clone());        
-                }
-            } else {
+           //     if original[i + 1] == "{" {
+           //         i += 1;
+           //         indent += 1;
+           //         path.push(prexec.name.clone());        
+           //     }
+           // } else {
+           //     return Err(anyhow::anyhow!("\"dir\" should be followed by ':'"));
+           // }
+            if original[i] != ":" {
                 return Err(anyhow::anyhow!("\"dir\" should be followed by ':'"));
             }
+
+            i += 1;
+            prexec.name.push_str(&original[i]);
+
+            // see if the index is out of vector's bound.
+            if i + 1 >= original.len() {
+                res.push(prexec);
+                prexec = ExecInfo::new();
+                continue;
+            }
+
+            //leden ses om dett nastat innehallet ar "{".
+            if original[i + 1] == "{" {
+                i += 1;
+                indent += 1;
+                path.push(prexec.name.clone());
+            }
+
             res.push(prexec);
             prexec = ExecInfo::new();
         }
