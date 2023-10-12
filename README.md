@@ -9,20 +9,20 @@
 
 **Create a filesystem**
 
-Use make subcommand. set your wem script's name to the first value.
+Use `make` subcommand. set your wem script's name to the first value.
 ```sh
 wem make your-script
 ```
 
 > note that, if you have `%NAME%` in your wem script,
 > you can set your project name as a second value.
-```sh
-wem make your-script your_project
-```
+> ```sh
+> wem make your-script your_project
+> ```
 
 **List all the available wem scripts**
 
-Use list subcommand.
+Use `list` subcommand.
 
 ```sh
 wem list
@@ -46,10 +46,10 @@ With only `make`, you can set how the `%TIME%` will be formatted using -t/--time
 wem make your-wem-script your_project -t "%Y-%m-%d"
 ```
 
-> Available tags:
->   %Y: year 
->   %m: month
->   %d: day
+> Available tags:<br />
+>   %Y: year <br />
+>   %m: month <br />
+>   %d: day <br />
 > the time format is based on `chrono` crate,
 > for further information, see the official repo on `chrono`
 
@@ -75,10 +75,10 @@ wem -c path/to/your/config make/list ...
 wem -m testdebugtime make/list ...
 ```
 
-> Available modes:
->   test:  when set , WEM will not create any actuall files.
->   debug: display internal values. useful when you have a problem with parsing
->   time:  display benchmark
+> Available modes:<br />
+>   test:  when set , WEM will not create any actuall files.<br />
+>   debug: display internal values. useful when you have a problem with parsing<br />
+>   time:  display benchmark<br />
 
 
 ## License
