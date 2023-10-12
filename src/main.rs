@@ -117,7 +117,10 @@ fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>, arg: &
                 else if temp_card == "DQ".to_string() {
                     line.push('"');
                     temp_card = String::new();
-
+                }
+                else if temp_card == "SRC".to_string() {
+                    line.push_str(arg.ref_src.as_str());
+                    temp_card = String::new();
                 } else {
                     if let Some(var) = val_hash.get(&temp_card) {
                         line.push_str(var);
@@ -441,6 +444,24 @@ fn try_open_files(pathvec: Vec<String>) -> anyhow::Result<File> {
     return Err(anyhow::anyhow!("could not find any config files"));
 }
 
+fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
+    let mut i = 0usize;
+    while i < lex.len() {
+        if lex[i] == "dref" {
+            i += 1;
+            if lex[i] != ":" {
+                return Err(anyhow::anyhow!("dref needs ':' as a separator"));
+            }
+
+            i += 1;
+            return Ok(lex[i].clone());
+        }
+        i += 1;
+    }
+
+    Err(anyhow::anyhow!("couldn't find dref anywhere"))
+}
+
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
@@ -509,7 +530,24 @@ fn main() -> anyhow::Result<()> {
 
     let lexed = lexer(lex)?;
 
-    let variables = hash_maker(&lexed)?;
+    let mut variables = hash_maker(&lexed)?;
+
+    if lexed.contains(&"dref".to_string()) {
+        let mut dref_line: Vec<String> = Vec::new();
+        if let Ok(lines) = read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
+            for line in lines {
+                if let Ok(string_line) = line {
+                    dref_line.push(string_line);
+                }
+            }
+        } else {
+            return Err(anyhow::anyhow!("failed to read the path"));
+        }
+        let dref_var = hash_maker(&lexer(dref_line)?)?;
+        for (name, var) in dref_var {
+            variables.insert(name, var);
+        }
+    }
 
     if mode.contains("debug") {
         println!("\nvariables: ");

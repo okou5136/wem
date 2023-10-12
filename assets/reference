@@ -1,0 +1,7 @@
+dref:%SRC%/dref_target
+
+dir:%this-is-root-dir% {
+    dir:%this-is-some-dir%
+    file:%x-file%
+    file:%y-file%
+}
