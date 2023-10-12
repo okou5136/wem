@@ -50,11 +50,11 @@ wem make your-wem-script your_project -t "%Y-%m-%d"
 >   %Y: year <br />
 >   %m: month <br />
 >   %d: day <br />
-> the time format is based on `chrono` crate,
-> for further information, see the official repo on `chrono`
+> The time format is based on `chrono` crate.
+> For further information, see the official repo on `chrono`
 
 
-**Specify where to output the files**
+**Specify Where To Output The Files**
 
 With only `make`, you can set the output with -o/--output option.
 ```sh
@@ -62,14 +62,14 @@ wem make your-wem-script your_script_name -o path/to/the/output
 ```
 
 
-**Specify the configuration file**
+**Specify The Configuration File**
 
 ```sh
 wem -c path/to/your/config make/list ...
 ```
 
 
-**Set mode**
+**Set Mode**
 
 ```sh
 wem -m testdebugtime make/list ...

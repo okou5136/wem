@@ -83,7 +83,7 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
                 return Err(anyhow::anyhow!("Syntax error occurred during parsing variables:
                                            \nthe command \"def\" could not detect \":\""));               
             }
-        } 
+        }
         i += 1;
     }
 
@@ -92,7 +92,6 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
 
 //parse the lexed lines and substitute the strings
 fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>, arg: &MakeArg) -> anyhow::Result<Vec<String>> {
-    //let arg = Arguments::parse();
     let mut result: Vec<String> = Vec::new();
     let mut line = String::new();
     let mut i = 0usize;
