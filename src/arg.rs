@@ -38,7 +38,7 @@ pub struct MakeCommand {
     #[clap(short='s', long="source")]
     pub reference_source: Option<String>,
 
-    ///determine how %DATE% is formatted
+    ///determine how %DATE% is formatted (this value will overwrite the value in config)
     #[clap(short='t', long="time-format")]
     pub time_format: Option<String>,
 
