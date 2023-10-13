@@ -1,0 +1,15 @@
+desc:"minimal file structure for the base of a simple webpage"
+
+dref:/home/normie/documents/program/rs/workinprogress/wem/assets/dref-wp-dref
+
+dir:%NAME% {
+    file(pre:"%header%"):index.html
+    dir:css {
+        file:index.css
+    }
+    dir:resource {
+        dir:image {
+            dir:icon
+        }
+    }
+}
