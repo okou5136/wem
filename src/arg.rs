@@ -24,6 +24,7 @@ pub enum Move {
 
     ///list up all available wem scripts
     List(ListCommand),
+
 }
 
 #[derive(Debug, Args)]
@@ -51,4 +52,9 @@ pub struct MakeCommand {
 pub struct ListCommand {
     ///path to the the file in which wem script is stored(default value is stored in config file)
     pub reference_path: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub struct ReadCommand {
+    pub reference_path: String,
 }

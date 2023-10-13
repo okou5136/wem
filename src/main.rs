@@ -1,9 +1,9 @@
-mod wem_structure;
+mod structure;
 mod search_org;
 mod arg;
 
 use arg::*;
-use wem_structure::*;
+use structure::*;
 
 use serde_yaml::{ self };
 use anyhow::Context;
