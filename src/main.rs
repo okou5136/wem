@@ -1,10 +1,11 @@
 mod structure;
-mod search_org;
+mod general_func;
 mod arg;
 
 use arg::*;
 use structure::*;
 
+use walkdir::WalkDir;
 use serde_yaml::{ self };
 use anyhow::Context;
 use chrono;
@@ -277,7 +278,7 @@ fn lexer(unlexed: Vec<String>) -> anyhow::Result<Vec<String>> {
                 dq_ind = dq_ind ^ true;
             }
 
-            if search_org::does_contain_vec(each_char.to_string(), vec!['"', ':', '{', '}', '(', ')', '=']) 
+            if general_func::does_contain_vec(each_char.to_string(), vec!['"', ':', '{', '}', '(', ')', '=']) 
                 && dq_ind == false 
                     && esc_ind == false {
                 cut_lex.push(String::new());
@@ -509,6 +510,15 @@ fn main() -> anyhow::Result<()> {
                 config.reference_path
             };
             display_reference(&reference)?;
+            return Ok(());
+        },
+        
+        Move::Read(command) => {
+
+            for entry in WalkDir::new(format!("./{}", command.ref_name)).into_iter().filter_map(|e| e.ok()) {
+                println!("{}", entry.path().display());
+
+            }
             return Ok(());
         },
     }

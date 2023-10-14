@@ -25,6 +25,9 @@ pub enum Move {
     ///list up all available wem scripts
     List(ListCommand),
 
+    ///read filesystem recursively and generate a wem script
+    Read(ReadCommand),
+
 }
 
 #[derive(Debug, Args)]
@@ -56,5 +59,5 @@ pub struct ListCommand {
 
 #[derive(Debug, Args)]
 pub struct ReadCommand {
-    pub reference_path: String,
+    pub ref_name: String,
 }
