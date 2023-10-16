@@ -63,4 +63,7 @@ pub struct ReadCommand {
 
     #[clap(short='s', long="source")]
     pub ref_src: Option<String>,
+
+    #[clap(short='d', long="description")]
+    pub desc: Option<String>,
 }

@@ -465,12 +465,14 @@ fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
 
 fn del_filename(path: String) -> anyhow::Result<String> {
     let mut path: Vec<char> = path.chars().collect::<Vec<char>>();
+    let mut res: String = String::new();
     let mut i = path.len() - 1;
 
     while i > 0 {
         if path[i] == '/' {
             path.pop();
-            return Ok(path.into_iter().collect());
+            return Ok(path.into_iter().collect::<String>());
+            break;
         }
         path.pop();
         i -= 1;
@@ -479,7 +481,53 @@ fn del_filename(path: String) -> anyhow::Result<String> {
     Err(anyhow::anyhow!("could not get valid path"))
 }
 
-fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<()> {
+fn path_to_filename(path: &String) -> anyhow::Result<String> {
+    let mut res = String::new();
+    for chars in path.chars() {
+        if chars == '/' {
+            return Ok(res.chars().rev().collect::<String>());
+        }
+        res.push(chars);
+    }
+
+    Err(anyhow::anyhow!("couldn't "))
+}
+
+fn create_wem(wem_script: Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result<String> {
+    let mut result = String::new();
+    let mut indent_map: HashMap<String, i32> = HashMap::new();
+    let mut indent = 0i32l
+    let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
+    let mut indent = 0usize;
+
+    if let Some(description) = desc {
+        result.push_str(&format!("desc: \"{}\"\n", description));
+    }
+
+    for component in wem_script {
+        match component.action {
+            Actions::DIR => {
+                result.push_str("dir");
+                indent_map.insert(component.name, indent);
+            },
+
+            Actions::FILE => {
+                result.push_str("file");
+                if component.pretext != "".to_string() {
+                    result.push_str(&format!("(pre: \"{}\")", component.pretext));
+                }
+            },
+        }
+        result.push(':');
+        result.push_str(&component.name);
+        result.push('\n');
+    }
+
+    println!("{}", &result);
+    Ok(result)
+}
+
+fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecInfo>> {
     let mut wem_script: Vec<ExecInfo> = Vec::new();
     let mut i = 0usize;
     let mut path: Vec<String> = match strt_loc {
@@ -506,13 +554,19 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<()> {
         else if entry.path().is_dir() {
             wem_script[i].action = Actions::DIR;
         }
-        wem_script[i].location.push_str(&del_filename(entry.path().display().to_string())?);
+
+        if i == 0 {
+            wem_script[i].location.push('.');
+        } else {
+            wem_script[i].location.push_str(&del_filename(entry.path().display().to_string())?);
+        }
 
         wem_script[i].name.push_str(entry.file_name().to_str().with_context(|| format!("failed to convevrt entryr to stinrg"))?);
         wem_script.push(ExecInfo::new());
         i += 1;
     }
 
+    wem_script.pop();
 
     println!("\nwem_script:");
     for content in &wem_script {
@@ -526,7 +580,9 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<()> {
                  content.pretext);
     }
 
-    Ok(())
+
+
+    Ok(wem_script)
 }
 
 fn main() -> anyhow::Result<()> {
@@ -580,7 +636,8 @@ fn main() -> anyhow::Result<()> {
         },
         
         Move::Read(command) => {
-            read_dir(command.ref_name, command.ref_src)?;
+            let dir_information = read_dir(command.ref_name, command.ref_src)?;
+            create_wem(dir_information, command.desc)?;
             return Ok(());
         },
     }
