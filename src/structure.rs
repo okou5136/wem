@@ -24,6 +24,18 @@ impl ExecInfo {
         }
     }
 
+    //pub fn from(act_src: Actions,
+    //            name_src: String,
+    //            loc_src: String,
+    //            pre_src: String) -> ExecInfo 
+    //{
+    //    ExecInfo {
+    //        action: act_src,
+    //        name: name_src, 
+    //        location: loc_src,
+    //        pretext: pre_src,
+    //    }
+    //}
     pub fn from_pre(&self, prefrom: Vec<String>) -> ExecInfo {
         ExecInfo {
             action: self.action.clone(),

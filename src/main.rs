@@ -11,7 +11,7 @@ use anyhow::Context;
 use chrono;
 use std::env;
 use std::fs::{self, File};
-use std::io::{self, BufRead, BufWriter, Write};
+use std::io::{self, BufWriter, Write};
 use std::path::Path;
 use std::collections::*;
 use std::time::Instant;
@@ -401,7 +401,7 @@ fn display_reference(ref_path: &String) -> anyhow::Result<()> {
 
     
     for file in &filenames {
-        if let Ok(lines) = read_file(file) {
+        if let Ok(lines) = general_func::read_file(file) {
             for line in lines {
                 if let Ok(code) = line {
                     file_content.push(code);
@@ -463,6 +463,72 @@ fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
     Err(anyhow::anyhow!("couldn't find dref anywhere"))
 }
 
+fn del_filename(path: String) -> anyhow::Result<String> {
+    let mut path: Vec<char> = path.chars().collect::<Vec<char>>();
+    let mut i = path.len() - 1;
+
+    while i > 0 {
+        if path[i] == '/' {
+            path.pop();
+            return Ok(path.into_iter().collect());
+        }
+        path.pop();
+        i -= 1;
+    }
+
+    Err(anyhow::anyhow!("could not get valid path"))
+}
+
+fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<()> {
+    let mut wem_script: Vec<ExecInfo> = Vec::new();
+    let mut i = 0usize;
+    let mut path: Vec<String> = match strt_loc {
+        Some(x) => vec![format!("{}", x)],
+        None => vec![format!("{}", env::current_dir()?.display())],
+    };
+
+    wem_script.push(ExecInfo::new());
+
+    for entry in WalkDir::new(format!("{}/{}", path.join("/"), name)).into_iter().filter_map(|e| e.ok()) {
+        if entry.path().is_file() {
+            wem_script[i].action = Actions::FILE;
+            if let Ok(lines) = general_func::read_file(entry.path()) {
+                for line in lines {
+                    if let Ok(string_line) = line {
+                        if string_line != "".to_string() {
+                            wem_script[i].pretext.push_str(&string_line);
+                            wem_script[i].pretext.push('\n');
+                        }
+                    }
+                }
+            }
+        }
+        else if entry.path().is_dir() {
+            wem_script[i].action = Actions::DIR;
+        }
+        wem_script[i].location.push_str(&del_filename(entry.path().display().to_string())?);
+
+        wem_script[i].name.push_str(entry.file_name().to_str().with_context(|| format!("failed to convevrt entryr to stinrg"))?);
+        wem_script.push(ExecInfo::new());
+        i += 1;
+    }
+
+
+    println!("\nwem_script:");
+    for content in &wem_script {
+        println!("action: {}\nname: {}\nparent: {}\npre: {}\n",
+                 match &content.action {
+                     Actions::DIR => String::from("Dir"),
+                     Actions::FILE => String::from("File"),
+                 }, 
+                 content.name, 
+                 content.location, 
+                 content.pretext);
+    }
+
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
     let arg = Arguments::parse();
@@ -514,16 +580,12 @@ fn main() -> anyhow::Result<()> {
         },
         
         Move::Read(command) => {
-
-            for entry in WalkDir::new(format!("./{}", command.ref_name)).into_iter().filter_map(|e| e.ok()) {
-                println!("{}", entry.path().display());
-
-            }
+            read_dir(command.ref_name, command.ref_src)?;
             return Ok(());
         },
     }
 
-    if let Ok(lines) = read_file(format!("{}/{}", make_arg.ref_src, make_arg.ref_name)) {
+    if let Ok(lines) = general_func::read_file(format!("{}/{}", make_arg.ref_src, make_arg.ref_name)) {
         for line in lines {
             if let Ok(string_line) = line {
                 lex.push(string_line);
@@ -544,7 +606,7 @@ fn main() -> anyhow::Result<()> {
 
     if lexed.contains(&"dref".to_string()) {
         let mut dref_line: Vec<String> = Vec::new();
-        if let Ok(lines) = read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
+        if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
             for line in lines {
                 if let Ok(string_line) = line {
                     dref_line.push(string_line);
@@ -618,9 +680,3 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn read_file<P>(file_path: P) -> anyhow::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>
-{
-    let file =  File::open(file_path).with_context(|| format!("failed to open the file"))?;
-    Ok(io::BufReader::new(file).lines())
-}

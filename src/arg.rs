@@ -60,4 +60,7 @@ pub struct ListCommand {
 #[derive(Debug, Args)]
 pub struct ReadCommand {
     pub ref_name: String,
+
+    #[clap(short='s', long="source")]
+    pub ref_src: Option<String>,
 }

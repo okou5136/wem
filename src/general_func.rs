@@ -1,3 +1,8 @@
+use anyhow::Context;
+use std::fs::{self, File};
+use std::io::{self, BufRead};
+use std::path::Path;
+
 pub fn does_contain_vec(target: String, chars: Vec<char>) -> bool
 {
     for tarchar in target.chars() {
@@ -8,4 +13,11 @@ pub fn does_contain_vec(target: String, chars: Vec<char>) -> bool
         }
     }
     return false;
+}
+
+pub fn read_file<P>(file_path: P) -> anyhow::Result<io::Lines<io::BufReader<File>>>
+where P: AsRef<Path>
+{
+    let file =  File::open(file_path).with_context(|| format!("failed to open the file"))?;
+    Ok(io::BufReader::new(file).lines())
 }
