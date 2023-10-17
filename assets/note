@@ -1,6 +1,6 @@
 desc:"simple file structure for note taking with Org-mode"
 
-def: name = Daniel Abendschein
+def: name = Your Name
 
 def: metadates = "#+title:
 #+author: %name%

@@ -493,10 +493,29 @@ fn path_to_filename(path: &String) -> anyhow::Result<String> {
     Err(anyhow::anyhow!("couldn't "))
 }
 
+
+//this is where I'm currently working on.
+//
+//read the information about files, which is defined as ExecInfo,
+//and generate a wem script from it
 fn create_wem(wem_script: Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result<String> {
+
+    //quick note: how to indent
+    //the first this came up to my mind was creating a hash map that stores the information of
+    //indentations for each directory as a String type variable along with how many
+    //indentation is needed.
+    //
+    //however, I realized that that would be too complicated and has a potential risk that slows
+    //this program down.
+    //
+    //so, keeping the idea of storing information as a hash map, 
+    //I decided to resolve how many indentation is needed for each directory
+    //AND THEN create a wem script with indentation based on the hash map, each in the separate
+    //loop.
+
     let mut result = String::new();
     let mut indent_map: HashMap<String, i32> = HashMap::new();
-    let mut indent = 0i32l
+    let mut indent = 0i32;
     let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
     let mut indent = 0usize;
 
@@ -508,7 +527,6 @@ fn create_wem(wem_script: Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result
         match component.action {
             Actions::DIR => {
                 result.push_str("dir");
-                indent_map.insert(component.name, indent);
             },
 
             Actions::FILE => {
