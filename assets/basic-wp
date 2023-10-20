@@ -1,6 +1,6 @@
 desc:"minimal file structure for the base of a simple webpage"
 
-dref:%SRC%/dref-basic-wp
+dref:%SRC%/wp-header
 
 dir:%NAME% {
     file(pre:"%header%"):index.html

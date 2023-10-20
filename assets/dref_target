@@ -1,9 +1,0 @@
-def:{
-    this-is-root-dir = root_dir
-    this-is-some-dir = some_dir
-}
-
-def:{
-    x-file = x
-    y-file = y
-}

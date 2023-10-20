@@ -1,22 +1,9 @@
 desc:"file structure for a segment of webpage"
 
-def: {
-    header=
-    "<!DOCTYPE html>
-    <html lang="en">
-    	<head>
-    		<meta charset="UTF-8">
-    		<title></title>
-    	</head>
-    	<body>
-
-    	</body>
-    </html>
-    "
-}
+dref:%SRC%/wp-header
 
 dir:%NAME% {
-    file:index.html
+    file(pre:"%header%"):index.html
     dir:css {
         file:index.css
     }
