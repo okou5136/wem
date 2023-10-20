@@ -66,4 +66,7 @@ pub struct ReadCommand {
 
     #[clap(short='d', long="description")]
     pub desc: Option<String>,
+
+    #[clap(short='o', long="output")]
+    pub output: Option<String>,
 }

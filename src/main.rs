@@ -472,7 +472,6 @@ fn del_filename(path: String) -> anyhow::Result<String> {
         if path[i] == '/' {
             path.pop();
             return Ok(path.into_iter().collect::<String>());
-            break;
         }
         path.pop();
         i -= 1;
@@ -498,7 +497,7 @@ fn path_to_filename(path: &String) -> anyhow::Result<String> {
 //
 //read the information about files, which is defined as ExecInfo,
 //and generate a wem script from it
-fn create_wem(wem_script: Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result<String> {
+fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result<String> {
 
     //quick note: how to indent
     //the first this came up to my mind was creating a hash map that stores the information of
@@ -513,33 +512,96 @@ fn create_wem(wem_script: Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result
     //AND THEN create a wem script with indentation based on the hash map, each in the separate
     //loop.
 
+    let mut description = String::new();
+    let mut variables: HashMap<String, String> = HashMap::new();
+    let mut varstr = String::new();
+    let mut filesystem = String::new();
     let mut result = String::new();
     let mut indent_map: HashMap<String, i32> = HashMap::new();
     let mut indent = 0i32;
+    let mut varnum = 0usize;
     let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
-    let mut indent = 0usize;
 
-    if let Some(description) = desc {
-        result.push_str(&format!("desc: \"{}\"\n", description));
+    //when the contents of indent_map are parent's name and the indentation depth
+    for (i, component) in wem_script.iter().enumerate() {
+        if i == 0 {
+            indent_map.insert(component.location.clone(), 0);
+        }
+        else if component.location.contains(&before_location) && component.location != before_location {
+            indent += 1;
+            indent_map.insert(component.location.clone(), indent);
+        }
+
+        before_location = component.location.clone();
     }
 
-    for component in wem_script {
+    if let Some(line) = desc {
+        description.push_str(&format!("desc: \"{}\"\n", line));
+    }
+
+
+    before_location = wem_script[0].location.clone();
+    for (i, component) in wem_script.iter().enumerate() {
+        if let Some(ind) = indent_map.get(&component.location) {
+            for _ in 0..*ind {
+                filesystem.push_str("   ");
+            }
+        }
         match component.action {
             Actions::DIR => {
-                result.push_str("dir");
+                filesystem.push_str("dir");
+                filesystem.push(':');
+                filesystem.push_str(&component.name);
+                if let Some(_) = indent_map.get(&vec![component.location.clone(), component.name.clone()].join("/")) {
+                    filesystem.push_str(" {");
+                }
             },
 
             Actions::FILE => {
-                result.push_str("file");
+                filesystem.push_str("file");
                 if component.pretext != "".to_string() {
-                    result.push_str(&format!("(pre: \"{}\")", component.pretext));
+                    if component.pretext.as_str().lines().count() >= 1 {
+                        variables.insert(format!("{}", varnum), component.pretext.clone());
+                        filesystem.push_str(&format!("(pre: \"%{}%\")", varnum));
+                        varnum += 1;
+                    } else {
+                        filesystem.push_str(&format!("(pre: \"{}\")", component.pretext));
+                    }
                 }
+                filesystem.push(':');
+                filesystem.push_str(&component.name);
             },
         }
-        result.push(':');
-        result.push_str(&component.name);
-        result.push('\n');
+
+        if i < wem_script.len() - 1 {
+            if component.location != wem_script[i + 1].location && component.location.contains(&wem_script[i + 1].location) {
+                filesystem.push('\n');
+                if let Some(ind) = indent_map.get(&component.location) {
+                    for _ in 1..*ind {
+                        filesystem.push_str("   ");
+                    }
+                }
+                filesystem.push_str("}");
+            }
+        } else {
+            filesystem.push_str("\n}");
+        }
+
+        filesystem.push('\n');
     }
+
+    if !variables.is_empty() {
+        varstr.push_str("def: {\n");
+        for (num, var) in variables {
+            varstr.push_str(&format!("{} = \"{}\"\n",num, var ));
+        }
+        varstr.push_str("}\n\n");
+    }
+
+    result.push_str(&description);
+    result.push_str(&varstr);
+    result.push_str(&filesystem);
+
 
     println!("{}", &result);
     Ok(result)
@@ -574,7 +636,7 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecIn
         }
 
         if i == 0 {
-            wem_script[i].location.push('.');
+            wem_script[i].location.push_str(&path.join("/"));
         } else {
             wem_script[i].location.push_str(&del_filename(entry.path().display().to_string())?);
         }
@@ -586,17 +648,17 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecIn
 
     wem_script.pop();
 
-    println!("\nwem_script:");
-    for content in &wem_script {
-        println!("action: {}\nname: {}\nparent: {}\npre: {}\n",
-                 match &content.action {
-                     Actions::DIR => String::from("Dir"),
-                     Actions::FILE => String::from("File"),
-                 }, 
-                 content.name, 
-                 content.location, 
-                 content.pretext);
-    }
+   // println!("\nwem_script:");
+   // for content in &wem_script {
+   //     println!("action: {}\nname: {}\nparent: {}\npre: {}\n",
+   //              match &content.action {
+   //                  Actions::DIR => String::from("Dir"),
+   //                  Actions::FILE => String::from("File"),
+   //              }, 
+   //              content.name, 
+   //              content.location, 
+   //              content.pretext);
+   // }
 
 
 
@@ -654,8 +716,19 @@ fn main() -> anyhow::Result<()> {
         },
         
         Move::Read(command) => {
+            let  file = File::create(match command.output {
+                Some(x) => x,
+                None => format!("{}/{}", config.reference_path, &command.ref_name),
+            })
+            .with_context(|| format!("failed to create new file"))?;
             let dir_information = read_dir(command.ref_name, command.ref_src)?;
-            create_wem(dir_information, command.desc)?;
+            let result =  create_wem(&dir_information, command.desc)?;
+
+
+            let mut filebuf = BufWriter::new(file);
+            filebuf.write(result.as_bytes())
+                .with_context(|| format!("failed to write pretext to the specified file"))?;
+
             return Ok(());
         },
     }
