@@ -36,7 +36,7 @@ pub struct MakeCommand {
     pub reference_name: String,
 
     ///name of your project, will be value for %NAME%
-    pub project_name: String,
+    pub project_name: Option<String>,
 
     ///path to the the file in which wem script is stored(default value is stored in config file)
     #[clap(short='s', long="source")]
@@ -70,3 +70,4 @@ pub struct ReadCommand {
     #[clap(short='o', long="output")]
     pub output: Option<String>,
 }
+

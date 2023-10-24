@@ -689,8 +689,12 @@ fn main() -> anyhow::Result<()> {
     println!("{:?}", config.clone());
     match arg.act {
         Move::Make(command) => {
-            make_arg = MakeArg::from(command.reference_name,
-                                         command.project_name,
+            make_arg = MakeArg::from(command.reference_name.clone(),
+                                         if let Some(pro_name) = command.project_name {
+                                             pro_name
+                                         } else {
+                                             command.reference_name
+                                         },
                                          if let Some(ref_path) = command.reference_source {
                                              ref_path
                                          } else {
