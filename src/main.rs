@@ -548,7 +548,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
             let before_ind = indent_map.get(&before_location).with_context(|| format!("failed to get indentation data"))?;
             if ind < before_ind {
                 for ii in 0..(before_ind - ind) {
-                    for _ in 0..ii {
+                    for _ in 1..(before_ind - ii) {
                         filesystem.push_str("   ");
                     }
                     filesystem.push_str("}\n");
@@ -597,6 +597,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
         }
 
         filesystem.push('\n');
+        before_location = component.location.clone();
     }
 
     if !variables.is_empty() {
