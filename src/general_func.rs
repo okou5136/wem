@@ -15,6 +15,7 @@ pub fn does_contain_vec(target: String, chars: Vec<char>) -> bool
     return false;
 }
 
+
 pub fn read_file<P>(file_path: P) -> anyhow::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>
 {

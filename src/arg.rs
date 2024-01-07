@@ -10,9 +10,6 @@ pub struct Arguments {
     #[clap(subcommand)]
     pub act: Move,
 
-    #[clap(short='m', long="mode")]
-    pub mode: Option<String>,
-
     #[clap(short='c', long="config")]
     pub conf_path: Option<String>
 }
@@ -61,13 +58,13 @@ pub struct ListCommand {
 pub struct ReadCommand {
     pub ref_name: String,
 
+    pub output: Option<String>,
+
     #[clap(short='s', long="source")]
     pub ref_src: Option<String>,
 
     #[clap(short='d', long="description")]
     pub desc: Option<String>,
 
-    #[clap(short='o', long="output")]
-    pub output: Option<String>,
 }
 

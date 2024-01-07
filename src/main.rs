@@ -522,16 +522,15 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     let mut varnum = 0usize;
     let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
 
+    let base_slash = String::from(format!("{}", env::current_dir()?.display())).matches("/").count();
+
+    for ws in wem_script {
+        println!("{:?}", ws);
+    }
+
     //when the contents of indent_map are parent's name and the indentation depth
     for (i, component) in wem_script.iter().enumerate() {
-        if i == 0 {
-            indent_map.insert(component.location.clone(), 0);
-        }
-        else if component.location.contains(&before_location) && component.location != before_location {
-            indent += 1;
-            indent_map.insert(component.location.clone(), indent);
-        }
-
+        indent_map.insert(component.location.clone(), (component.location.matches("/").count() - base_slash).try_into().unwrap());
         before_location = component.location.clone();
     }
 
@@ -539,10 +538,22 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
         description.push_str(&format!("desc: \"{}\"\n", line));
     }
 
+    println!("{:?}", indent_map);
+
 
     before_location = wem_script[0].location.clone();
     for (i, component) in wem_script.iter().enumerate() {
+
         if let Some(ind) = indent_map.get(&component.location) {
+            let before_ind = indent_map.get(&before_location).with_context(|| format!("failed to get indentation data"))?;
+            if ind < before_ind {
+                for ii in 0..(before_ind - ind) {
+                    for _ in 0..ii {
+                        filesystem.push_str("   ");
+                    }
+                    filesystem.push_str("}\n");
+                }
+            }
             for _ in 0..*ind {
                 filesystem.push_str("   ");
             }
@@ -573,18 +584,16 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
             },
         }
 
-        if i < wem_script.len() - 1 {
-            if component.location != wem_script[i + 1].location && component.location.contains(&wem_script[i + 1].location) {
-                filesystem.push('\n');
-                if let Some(ind) = indent_map.get(&component.location) {
-                    for _ in 1..*ind {
+        if i == wem_script.len() - 1 {
+            filesystem.push('\n');
+            if let Some(ind) = indent_map.get(&component.location) {
+                for ii in 0..*ind {
+                    for _ in 1..(ind - ii) {
                         filesystem.push_str("   ");
                     }
+                    filesystem.push_str("}\n");
                 }
-                filesystem.push_str("}");
             }
-        } else {
-            filesystem.push_str("\n}");
         }
 
         filesystem.push('\n');
@@ -672,13 +681,9 @@ fn main() -> anyhow::Result<()> {
     let make_arg: MakeArg;
     let mut lex: Vec<String> = Vec::new();
     let now = Instant::now();
-    let mode = match arg.mode {
-        Some(x) => x,
-        None => String::new(),
-    };
     let conf_path: Vec<String> = match arg.conf_path {
         Some(x) => vec![x],
-        None => vec!["/home/normie/documents/program/rs/workinprogress/wem/config.yml".to_string(),
+        None => vec!["/home/normie/documents/program/rs/completed/wem/config.yml".to_string(),
                           format!("{}/.wenconf.yml", home),
                           format!("{}/.config/wem/config.yml", home)],
     };
@@ -690,23 +695,76 @@ fn main() -> anyhow::Result<()> {
     match arg.act {
         Move::Make(command) => {
             make_arg = MakeArg::from(command.reference_name.clone(),
-                                         if let Some(pro_name) = command.project_name {
-                                             pro_name
-                                         } else {
-                                             command.reference_name
-                                         },
-                                         if let Some(ref_path) = command.reference_source {
-                                             ref_path
-                                         } else {
-                                             config.reference_path
-                                         },
-                                         if let Some(format) = command.time_format {
-                                             format
-                                         } else {
-                                             config.time_format
-                                         },
-                                         command.output
-                                         );
+            if let Some(pro_name) = command.project_name {
+                pro_name
+            } else {
+                command.reference_name
+            },
+            if let Some(ref_path) = command.reference_source {
+                ref_path
+            } else {
+                config.reference_path
+            },
+            if let Some(format) = command.time_format {
+                format
+            } else {
+                config.time_format
+            },
+            command.output
+            );
+
+            if let Ok(lines) = general_func::read_file(format!("{}/{}", make_arg.ref_src, make_arg.ref_name)) {
+                for line in lines {
+                    if let Ok(string_line) = line {
+                        lex.push(string_line);
+                    }
+                }
+            } else {
+                return Err(anyhow::anyhow!("failed to read the path"));
+            }
+
+            println!("\nlines: ");
+            for lex_line in &lex {
+                println!("{}", lex_line);
+            }
+
+            let lexed = lexer(lex)?;
+
+            let mut variables = hash_maker(&lexed)?;
+
+            if lexed.contains(&"dref".to_string()) {
+                let mut dref_line: Vec<String> = Vec::new();
+                if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
+                    for line in lines {
+                        if let Ok(string_line) = line {
+                            dref_line.push(string_line);
+                        }
+                    }
+                } else {
+                    return Err(anyhow::anyhow!("failed to read the path"));
+                }
+                let dref_var = hash_maker(&lexer(dref_line)?)?;
+                for (name, var) in dref_var {
+                    variables.insert(name, var);
+                }
+            }
+
+
+            let lexed = val_parser(&lexed, &variables, &make_arg)?;
+
+            let parsed = parser(lexed, make_arg.clone().output)?;
+
+            let parsed = parsed.iter()
+                .map(|x| x.from_pre(
+                        if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
+                            y
+                        } else {
+                            vec![String::from("Error pretext")]
+                        }
+                        ))
+                .collect::<Vec<ExecInfo>>();
+
+                exec(parsed)?;
         },
 
         Move::List(command) => {
@@ -735,99 +793,6 @@ fn main() -> anyhow::Result<()> {
 
             return Ok(());
         },
-    }
-
-    if let Ok(lines) = general_func::read_file(format!("{}/{}", make_arg.ref_src, make_arg.ref_name)) {
-        for line in lines {
-            if let Ok(string_line) = line {
-                lex.push(string_line);
-            }
-        }
-    } else {
-        return Err(anyhow::anyhow!("failed to read the path"));
-    }
-
-    println!("\nlines: ");
-    for lex_line in &lex {
-        println!("{}", lex_line);
-    }
-
-    let lexed = lexer(lex)?;
-
-    let mut variables = hash_maker(&lexed)?;
-
-    if lexed.contains(&"dref".to_string()) {
-        let mut dref_line: Vec<String> = Vec::new();
-        if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
-            for line in lines {
-                if let Ok(string_line) = line {
-                    dref_line.push(string_line);
-                }
-            }
-        } else {
-            return Err(anyhow::anyhow!("failed to read the path"));
-        }
-        let dref_var = hash_maker(&lexer(dref_line)?)?;
-        for (name, var) in dref_var {
-            variables.insert(name, var);
-        }
-    }
-
-    if mode.contains("debug") {
-        println!("\nvariables: ");
-        for (name, val) in &variables {
-            println!("{}: {}", name, val);
-        }
-    }
-    if mode.contains("debug") {
-        println!("\nlexed lines: ");
-        for lexed_line in &lexed {
-            println!("{}", lexed_line);
-        }
-    }
-
-    let lexed = val_parser(&lexed, &variables, &make_arg)?;
-
-    if mode.contains("debug") {
-        println!("\nlexed lines(variable substituted): ");
-        for lexed_line in &lexed {
-            println!("{}", lexed_line);
-        }
-    }
-
-    let parsed = parser(lexed, make_arg.clone().output)?;
-
-    let parsed = parsed.iter()
-        .map(|x| x.from_pre(
-                if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
-                    y
-                } else {
-                    vec![String::from("Error pretext")]
-                }
-                ))
-        .collect::<Vec<ExecInfo>>();
-
-    if mode.contains("debug") {
-        println!("\nexec info:");
-        for content in &parsed {
-            println!("action: {}\nname: {}\nloc: {}\npre: {}\n",
-                     match &content.action {
-                             Actions::DIR => String::from("Dir"),
-                             Actions::FILE => String::from("File"),
-                     }, 
-                     content.name, 
-                     content.location, 
-                     content.pretext);
-        }
-    }
-
-    if mode.contains("time") {
-        let elapsed = now.elapsed();
-        println!("elapsed time: {:.2?}", elapsed);
-    }
-
-    if !mode.contains("test") {
-        exec(parsed)?;
     }
     Ok(())
 }

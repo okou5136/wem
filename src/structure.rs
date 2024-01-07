@@ -1,11 +1,12 @@
 use serde::{ Serialize, Deserialize };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Actions {
     DIR,
     FILE,
 }
 
+#[derive(Debug)]
 pub struct ExecInfo {
     pub action: Actions,
     pub name: String,

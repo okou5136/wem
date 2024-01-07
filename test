@@ -1,0 +1,14 @@
+dir:TEST
+   dir:somefile1 {
+      dir:somefile11 {
+         dir:somefile111
+      dir:somefile12 {
+            dir:somefile121
+   dir:somefile2 {
+               dir:somefile22
+               dir:somefile21            }
+         }
+      }
+   }
+}
+
