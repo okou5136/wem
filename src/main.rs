@@ -15,6 +15,7 @@ use std::io::{self, BufWriter, Write};
 use std::path::Path;
 use std::collections::*;
 use std::time::Instant;
+use std::process::Command;
 use clap::Parser;
 
 //read lexed lines and extract the variable datas
@@ -669,9 +670,6 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecIn
    //              content.location, 
    //              content.pretext);
    // }
-
-
-
     Ok(wem_script)
 }
 
@@ -692,7 +690,6 @@ fn main() -> anyhow::Result<()> {
     let config:Config = serde_yaml::from_reader(try_open_files(conf_path)?)
         .with_context(|| format!("failed to read config file"))?;
 
-    println!("{:?}", config.clone());
     match arg.act {
         Move::Make(command) => {
             make_arg = MakeArg::from(command.reference_name.clone(),
@@ -793,6 +790,39 @@ fn main() -> anyhow::Result<()> {
                 .with_context(|| format!("failed to write pretext to the specified file"))?;
 
             return Ok(());
+        },
+        Move::Mod(command) => {
+            let editor = match command.editor {
+                Some(x) => x,
+                None => config.editor,
+            };
+            
+            let path = match command.ref_path {
+                Some(x) => x,
+                None => format!("{}/{}", config.reference_path, command.ref_name),
+            };
+
+            match editor.as_str() {
+                "nvim" => {
+                    Command::new("nvim")
+                        .arg(path)
+                        .spawn()
+                        .with_context(|| format!("failed to execute nvim"))?;
+                },
+
+                "vim" => {
+                    Command::new("vim")
+                        .arg(path)
+                        .spawn()
+                        .with_context(|| format!("failed to execute nvim"))?;
+                },
+
+                _ => {
+                    return Err(anyhow::anyhow!("Error: unsupported text editor"));
+                },
+            }
+
+            return Ok(())
         },
     }
     Ok(())

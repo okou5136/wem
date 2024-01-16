@@ -25,6 +25,8 @@ pub enum Move {
     ///read filesystem recursively and generate a wem script
     Read(ReadCommand),
 
+    ///modify a selected wem script
+    Mod(ModCommand),
 }
 
 #[derive(Debug, Args)]
@@ -68,3 +70,13 @@ pub struct ReadCommand {
 
 }
 
+#[derive(Debug, Args)]
+pub struct ModCommand {
+    pub ref_name: String,
+    
+    #[clap(short='e', long="editor")]
+    pub editor: Option<String>,
+
+    #[clap(short='p', long="path")]
+    pub ref_path: Option<String>,
+}

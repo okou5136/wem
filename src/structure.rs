@@ -90,6 +90,7 @@ impl MakeArg {
 pub struct Config {
     pub reference_path: String,
     pub time_format: String,
+    pub editor: String,
 }
 
     // this function would come in handy later on.
