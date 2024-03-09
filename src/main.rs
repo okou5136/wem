@@ -521,7 +521,8 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     let mut indent_map: HashMap<String, i32> = HashMap::new();
     let _indent = 0i32;
     let mut varnum = 0usize;
-    let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
+    //let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
+    let mut before_location; 
 
     let base_slash = String::from(format!("{}", env::current_dir()?.display())).matches("/").count();
 
