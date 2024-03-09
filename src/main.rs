@@ -11,7 +11,7 @@ use anyhow::Context;
 use chrono;
 use std::env;
 use std::fs::{self, File};
-use std::io::{self, BufWriter, Write};
+use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::collections::*;
 use std::time::Instant;
@@ -466,7 +466,7 @@ fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
 
 fn del_filename(path: String) -> anyhow::Result<String> {
     let mut path: Vec<char> = path.chars().collect::<Vec<char>>();
-    let mut res: String = String::new();
+    let _res: String = String::new();
     let mut i = path.len() - 1;
 
     while i > 0 {
@@ -519,7 +519,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     let mut filesystem = String::new();
     let mut result = String::new();
     let mut indent_map: HashMap<String, i32> = HashMap::new();
-    let mut indent = 0i32;
+    let _indent = 0i32;
     let mut varnum = 0usize;
     let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
 
@@ -530,7 +530,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     }
 
     //when the contents of indent_map are parent's name and the indentation depth
-    for (i, component) in wem_script.iter().enumerate() {
+    for (_i, component) in wem_script.iter().enumerate() {
         indent_map.insert(component.location.clone(), (component.location.matches("/").count() - base_slash).try_into().unwrap());
         before_location = component.location.clone();
     }
@@ -621,7 +621,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
 fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecInfo>> {
     let mut wem_script: Vec<ExecInfo> = Vec::new();
     let mut i = 0usize;
-    let mut path: Vec<String> = match strt_loc {
+    let path: Vec<String> = match strt_loc {
         Some(x) => vec![format!("{}", x)],
         None => vec![format!("{}", env::current_dir()?.display())],
     };
@@ -658,20 +658,20 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecIn
     }
 
     wem_script.pop();
-
-   // println!("\nwem_script:");
-   // for content in &wem_script {
-   //     println!("action: {}\nname: {}\nparent: {}\npre: {}\n",
-   //              match &content.action {
-   //                  Actions::DIR => String::from("Dir"),
-   //                  Actions::FILE => String::from("File"),
-   //              }, 
-   //              content.name, 
-   //              content.location, 
-   //              content.pretext);
-   // }
     Ok(wem_script)
 }
+
+
+// How this program works
+//
+// 1. Read config file
+// 2. Determine the mode to use
+//  2.1 make
+//   2.1.1 If certain options are not given, read them from the config file
+//   2.1.2 Read from the given wem file
+//   2.1.3 Lex the file input
+//   2.1.4 
+//  2.2 
 
 fn main() -> anyhow::Result<()> {
     //arguments containing reference name, project name, and debug information
@@ -679,7 +679,7 @@ fn main() -> anyhow::Result<()> {
     let home = env::var("HOME")?;
     let make_arg: MakeArg;
     let mut lex: Vec<String> = Vec::new();
-    let now = Instant::now();
+    let _now = Instant::now();
     let conf_path: Vec<String> = match arg.conf_path {
         Some(x) => vec![x],
         None => vec!["/home/normie/documents/program/rs/completed/wem/config.yml".to_string(),
@@ -726,10 +726,12 @@ fn main() -> anyhow::Result<()> {
                 println!("{}", lex_line);
             }
 
+            // ykw? i feel like hash_maker and dref part and all should go inside val_parser
             let lexed = lexer(lex)?;
 
             let mut variables = hash_maker(&lexed)?;
 
+            // create dref-exclusive function and make it recursive so dref in dref file can be read
             if lexed.contains(&"dref".to_string()) {
                 let mut dref_line: Vec<String> = Vec::new();
                 if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {

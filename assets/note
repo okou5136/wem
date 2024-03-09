@@ -2,14 +2,16 @@ desc:"simple file structure for note taking with Org-mode"
 
 def: name = Your Name
 
-def: metadates = "#+title:
+def: metadata = "#+title:
 #+author: %name%
 #+date: %DATE%
 
 "
 
 dir:%NAME% {
-    file(pre:"%metadates%"):%NAME%.org
+    file(pre:"%metadata%"):%NAME%.org
 
-    dir:latex
+    dir:latex {
+        file(pre:"latex ../%NAME%.tex && dvipdfmx ./%NAME%.dvi"):textopdf.sh
+    }
 }

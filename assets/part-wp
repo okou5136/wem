@@ -1,6 +1,5 @@
 desc:"generates a folder with html and css"
 
 dir:%NAME% {
-    file:%NAME%.html
-    file:%NAME%.css
+    file:index.html
 }

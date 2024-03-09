@@ -1,5 +1,5 @@
 use anyhow::Context;
-use std::fs::{self, File};
+use std::fs::{File};
 use std::io::{self, BufRead};
 use std::path::Path;
 

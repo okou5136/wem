@@ -12,4 +12,7 @@ dir:%NAME% {
             dir:icon
         }
     }
+    dir:js {
+        file:index.js
+    }
 }
