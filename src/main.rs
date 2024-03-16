@@ -562,7 +562,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
                         filesystem.push_str(&format!("(pre: \"%{}%\")", varnum));
                         varnum += 1;
                     } else {
-                        filesystem.push_str(&format!("(pre: \"{}\")", component.pretext.replace("\"", "\\\"")));
+                        filesystem.push_str(&format!("(pre: \"{}\")", component.pretext));
                     }
                 }
                 filesystem.push(':');
@@ -589,7 +589,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     if !variables.is_empty() {
         varstr.push_str("def: {\n");
         for (num, var) in variables {
-            varstr.push_str(&format!("{} = \"{}\"\n",num, var ));
+            varstr.push_str(&format!("{} = \"{}\"\n",num, var.replace("\"","\\\"") ));
         }
         varstr.push_str("}\n\n");
     }
