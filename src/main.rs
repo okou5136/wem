@@ -116,6 +116,10 @@ fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>, arg: &
                     line.push_str(format!("{}", chrono::Local::now().format(&arg.time_fmt)).as_str());
                     temp_card = String::new();
                 }
+                else if temp_card == "PERC".to_string() {
+                    line.push('%');
+                    temp_card = String::new();
+                }
                 else if temp_card == "DQ".to_string() {
                     line.push('"');
                     temp_card = String::new();
@@ -293,6 +297,11 @@ fn lexer(unlexed: Vec<String>) -> anyhow::Result<Vec<String>> {
                 cut_lex[res_pos].push_str(&"%DQ%");
                 esc_ind = false;
             }
+            else if each_char == '%' && esc_ind == true {
+                cut_lex[res_pos].pop();
+                cut_lex[res_pos].push_str(&"%PERC%");
+                esc_ind = false;
+            }
             else if each_char == '"' && dq_ind == true && esc_ind == false {
                 cut_lex.push(String::new());
                 res_pos += 1;
@@ -327,6 +336,8 @@ fn lexer(unlexed: Vec<String>) -> anyhow::Result<Vec<String>> {
             result.push(string);
         }
     }
+
+    println!("{:?}", &result);
 
     Ok(result)
 }
@@ -589,7 +600,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     if !variables.is_empty() {
         varstr.push_str("def: {\n");
         for (num, var) in variables {
-            varstr.push_str(&format!("{} = \"{}\"\n",num, var.replace("\"","\\\"") ));
+            varstr.push_str(&format!("{} = \"{}\"\n",num, var.replace("\"","\\\"").replace("%", "\\%") ));
         }
         varstr.push_str("}\n\n");
     }
@@ -770,7 +781,7 @@ fn main() -> anyhow::Result<()> {
         
         Move::Read(command) => {
             let  file = File::create(match command.output {
-                Some(x) => format!("{}/{}", config.reference_path, x),
+                Some(x) => x,
                 None => format!("{}/{}", config.reference_path, &command.ref_name),
             })
             .with_context(|| format!("failed to create new file"))?;
