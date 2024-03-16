@@ -481,21 +481,6 @@ fn del_filename(path: String) -> anyhow::Result<String> {
     Err(anyhow::anyhow!("could not get valid path"))
 }
 
-fn path_to_filename(path: &String) -> anyhow::Result<String> {
-    let mut res = String::new();
-    for chars in path.chars() {
-        if chars == '/' {
-            return Ok(res.chars().rev().collect::<String>());
-        }
-        res.push(chars);
-    }
-
-    Err(anyhow::anyhow!("couldn't "))
-}
-
-
-//this is where I'm currently working on.
-//
 //read the information about files, which is defined as ExecInfo,
 //and generate a wem script from it
 fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Result<String> {
@@ -521,7 +506,6 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
     let mut indent_map: HashMap<String, i32> = HashMap::new();
     let _indent = 0i32;
     let mut varnum = 0usize;
-    //let mut before_location = String::from(format!("{}", env::current_dir()?.display()));
     let mut before_location; 
 
     let base_slash = String::from(format!("{}", env::current_dir()?.display())).matches("/").count();
@@ -578,7 +562,7 @@ fn create_wem(wem_script: &Vec<ExecInfo>, desc: Option<String>) -> anyhow::Resul
                         filesystem.push_str(&format!("(pre: \"%{}%\")", varnum));
                         varnum += 1;
                     } else {
-                        filesystem.push_str(&format!("(pre: \"{}\")", component.pretext));
+                        filesystem.push_str(&format!("(pre: \"{}\")", component.pretext.replace("\"", "\\\"")));
                     }
                 }
                 filesystem.push(':');
@@ -659,6 +643,12 @@ fn read_dir(name: String, strt_loc: Option<String>) -> anyhow::Result<Vec<ExecIn
     }
 
     wem_script.pop();
+
+    println!("test purposed");
+    for ws in &wem_script {
+        println!("{}", ws.pretext);
+    }
+
     Ok(wem_script)
 }
 
@@ -780,7 +770,7 @@ fn main() -> anyhow::Result<()> {
         
         Move::Read(command) => {
             let  file = File::create(match command.output {
-                Some(x) => x,
+                Some(x) => format!("{}/{}", config.reference_path, x),
                 None => format!("{}/{}", config.reference_path, &command.ref_name),
             })
             .with_context(|| format!("failed to create new file"))?;
