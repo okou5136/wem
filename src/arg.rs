@@ -6,6 +6,10 @@ use clap::{
 
 
 #[derive(Debug, Parser)]
+#[clap (about="Wirease improved",
+long_about="A program that automates the process of generating files",
+author="D.A.",
+version="1.0.2 HIV")]
 pub struct Arguments {
     #[clap(subcommand)]
     pub act: Move,

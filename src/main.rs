@@ -781,7 +781,7 @@ fn main() -> anyhow::Result<()> {
         
         Move::Read(command) => {
             let  file = File::create(match command.output {
-                Some(x) => x,
+                Some(x) => format!("{}/{}", config.reference_path, x),
                 None => format!("{}/{}", config.reference_path, &command.ref_name),
             })
             .with_context(|| format!("failed to create new file"))?;
