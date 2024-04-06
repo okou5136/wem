@@ -41,7 +41,7 @@ wem make/list -s path/to/your/directory
 
 **Format Time/Date**
 
-With only `make`, you can set how the `%TIME%` will be formatted using -t/--time option.
+You can set how the `%TIME%` will be formatted using -t/--time option. This option only works with `make` command at the time.
 ```sh
 wem make your-wem-script your_project -t "%Y-%m-%d"
 ```
@@ -56,7 +56,7 @@ wem make your-wem-script your_project -t "%Y-%m-%d"
 
 **Specify Where To Output The Files**
 
-With only `make`, you can set the output with -o/--output option.
+You can set the output with -o/--output option.
 ```sh
 wem make your-wem-script your_script_name -o path/to/the/output
 ```
@@ -67,19 +67,6 @@ wem make your-wem-script your_script_name -o path/to/the/output
 ```sh
 wem -c path/to/your/config make/list ...
 ```
-
-
-**Set Mode**
-
-```sh
-wem -m testdebugtime make/list ...
-```
-
-> Available modes:<br />
->   test:  when set , WEM will not create any actuall files.<br />
->   debug: display internal values. useful when you have a problem with parsing<br />
->   time:  display benchmark<br />
-
 
 ## License
 it's not licensed at all for now
