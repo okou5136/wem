@@ -24,6 +24,24 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
     let mut varinfo = VarInfo::new();
     let mut i = 0usize;
 
+//    if original.contains(&"dref".to_string()) {
+//        let mut dref_line: Vec<String> = Vec::new();
+//        if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&original)?], &HashMap::new(), &make_arg)?.join("")) {
+//            for line in lines {
+//                if let Ok(string_line) = line {
+//                    dref_line.push(string_line);
+//                }
+//            }
+//        } else {
+//            return Err(anyhow::anyhow!("failed to read the path"));
+//        }
+//        let dref_var = hash_maker(&lexer(dref_line)?, &make_arg)?;
+//        for (name, var) in dref_var {
+//            vars.insert(name, var);
+//        }
+//    }
+
+
     while i < original.len() {
         if original[i] == "def" {
 
@@ -127,6 +145,7 @@ fn val_parser(original: &Vec<String>, val_hash: &HashMap<String, String>, arg: &
                 else if temp_card == "SRC".to_string() {
                     line.push_str(arg.ref_src.as_str());
                     temp_card = String::new();
+                    println!("source!");
                 } else {
                     if let Some(var) = val_hash.get(&temp_card) {
                         line.push_str(var);
@@ -734,7 +753,7 @@ fn main() -> anyhow::Result<()> {
             let mut variables = hash_maker(&lexed)?;
 
             // create dref-exclusive function and make it recursive so dref in dref file can be read
-            if lexed.contains(&"dref".to_string()) {
+            if general_func::does_contain_string(&lexed, "dref".to_string()) {
                 let mut dref_line: Vec<String> = Vec::new();
                 if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
                     for line in lines {
@@ -753,6 +772,7 @@ fn main() -> anyhow::Result<()> {
 
 
             let lexed = val_parser(&lexed, &variables, &make_arg)?;
+
 
             let parsed = parser(lexed, make_arg.clone().output)?;
 

@@ -15,6 +15,15 @@ pub fn does_contain_vec(target: String, chars: Vec<char>) -> bool
     return false;
 }
 
+pub fn does_contain_string(target: &Vec<String>, string: String) -> bool {
+    for tarstr in target.into_iter() {
+        if *tarstr == string {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 pub fn read_file<P>(file_path: P) -> anyhow::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>
