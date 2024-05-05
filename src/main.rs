@@ -845,15 +845,15 @@ fn main() -> anyhow::Result<()> {
 
             let parsed = parser(lexed, make_arg.clone().output)?;
 
-            //let parsed = parsed.iter()
-            //    .map(|x| x.from_pre(
-            //            if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
-            //                y
-            //            } else {
-            //                vec![String::from("Error pretext")]
-            //            }
-            //            ))
-            //    .collect::<Vec<ExecInfo>>();
+            let parsed = parsed.iter()
+                .map(|x| x.from_pre(
+                        if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
+                            y
+                        } else {
+                            vec![String::from("Error pretext")]
+                        }
+                        ))
+                .collect::<Vec<ExecInfo>>();
 
                 exec(parsed)?;
         },
