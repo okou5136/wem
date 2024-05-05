@@ -1,6 +1,6 @@
 desc:"file structure for a segment of webpage"
 
-dref:%SRC%/wp-header
+dref:wp-header
 
 dir:%NAME% {
     file(pre:"%header%"):index.html

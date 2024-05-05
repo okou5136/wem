@@ -1,6 +1,6 @@
 desc:"just an test for value"
 
-dref:%SRC%/fileinfo.wdv
+dref:fileinfo.wdv
 
 dir:TEST {
     file(pre:"%dreffing%"):dreffing

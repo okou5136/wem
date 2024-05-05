@@ -19,27 +19,10 @@ use std::process::Command;
 use clap::Parser;
 
 //read lexed lines and extract the variable datas
-fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>> {
+fn hash_maker(original: &Vec<String>, outsidefile: &Vec<String>) -> anyhow::Result<HashMap<String, String>> {
     let mut vars: HashMap<String, String> = HashMap::new();
     let mut varinfo = VarInfo::new();
     let mut i = 0usize;
-
-//    if original.contains(&"dref".to_string()) {
-//        let mut dref_line: Vec<String> = Vec::new();
-//        if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&original)?], &HashMap::new(), &make_arg)?.join("")) {
-//            for line in lines {
-//                if let Ok(string_line) = line {
-//                    dref_line.push(string_line);
-//                }
-//            }
-//        } else {
-//            return Err(anyhow::anyhow!("failed to read the path"));
-//        }
-//        let dref_var = hash_maker(&lexer(dref_line)?, &make_arg)?;
-//        for (name, var) in dref_var {
-//            vars.insert(name, var);
-//        }
-//    }
 
 
     while i < original.len() {
@@ -94,6 +77,71 @@ fn hash_maker(original: &Vec<String>) -> anyhow::Result<HashMap<String, String>>
                         }
                     } else {
                         varinfo.var.push_str(&original[i]);
+                    }
+
+                    vars.insert(varinfo.name, varinfo.var);
+                    varinfo = VarInfo::new();
+                }
+            } else {
+                return Err(anyhow::anyhow!("Syntax error occurred during parsing variables:
+                                           \nthe command \"def\" could not detect \":\""));               
+            }
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < outsidefile.len() {
+        if outsidefile[i] == "def" {
+
+            i += 1;
+            if outsidefile[i] == ":" {
+
+                i += 1;
+                if outsidefile[i] == "{" {
+
+                    i += 1;
+                    while outsidefile[i] != "}" {
+                        varinfo.name.push_str(&outsidefile[i]);
+
+                        i += 1;
+                        if outsidefile[i] != "=" {
+                            return Err(anyhow::anyhow!("Syntax error occurred during parsing varibales:\n
+                                                       varible name must be followed by \"=\" operator"));
+                        }
+
+                        i += 1;
+                        if outsidefile[i] == "\"" {
+                            i += 1;
+                            while outsidefile[i] != "\"" {
+                                varinfo.var.push_str(&format!("{}\n", outsidefile[i]));
+                                i += 1;
+                            }
+                        } else {
+                            varinfo.var.push_str(&outsidefile[i]);
+                        }
+
+                        vars.insert(varinfo.name, varinfo.var);
+                        varinfo = VarInfo::new();
+
+                        i += 1;
+                    }
+                } else {
+                    varinfo.name.push_str(&outsidefile[i]);
+                    i += 1;
+                    if outsidefile[i] != "=" {
+                        return Err(anyhow::anyhow!("Syntax error occurred during parsing varibales:\n
+                                                       varible name must be followed by \"=\" operator"));
+                    }
+
+                    i += 1;
+                    if outsidefile[i] == "\"" {
+                        i += 1;
+                        while outsidefile[i] != "\"" {
+                            varinfo.var.push_str(&format!("{}\n", outsidefile[i]));
+                            i += 1;
+                        }
+                    } else {
+                        varinfo.var.push_str(&outsidefile[i]);
                     }
 
                     vars.insert(varinfo.name, varinfo.var);
@@ -476,9 +524,16 @@ fn try_open_files(pathvec: Vec<String>) -> anyhow::Result<File> {
     return Err(anyhow::anyhow!("could not find any config files"));
 }
 
-fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
+fn dref_parser(lex: &Vec<String>, ref_src: &String) -> anyhow::Result<Vec<String>> {
     let mut i = 0usize;
+    let mut result: Vec<String> = Vec::new();
+
+    if !lex.contains(&"dref".to_string()) {
+        return Ok(Vec::new());
+    }
+
     while i < lex.len() {
+        let mut onetime: Vec<String> = Vec::new();
         if lex[i] == "dref" {
             i += 1;
             if lex[i] != ":" {
@@ -486,12 +541,42 @@ fn dref_parser(lex: &Vec<String>) -> anyhow::Result<String> {
             }
 
             i += 1;
-            return Ok(lex[i].clone());
+            if lex[i] == "{" {
+                i += 1;
+                while lex[i] != "}" {
+                    if let Ok(lines) = general_func::read_file(format!("{}/{}", ref_src, &lex[i])) {
+                        for line in lines {
+                            if let Ok(string_line) = line {
+                                onetime.push(string_line);
+                            }
+                        }
+                    } else {
+                        return Err(anyhow::anyhow!("failed to read files in dref_parser"));
+                    }
+                    i += 1;
+                    if lex[i] == "," {
+                        i += 1;
+                    }
+                }
+            } else {
+                if let Ok(lines) = general_func::read_file(format!("{}/{}", ref_src, &lex[i])) {
+                    for line in lines {
+                        if let Ok(string_line) = line {
+                            onetime.push(string_line);
+                        }
+                    }
+                } 
+            }
+        }
+
+
+        for ot_cont in lexer(onetime)? {
+            result.push(ot_cont.to_string());
         }
         i += 1;
     }
 
-    Err(anyhow::anyhow!("couldn't find dref anywhere"))
+   return Ok(result); 
 }
 
 fn del_filename(path: String) -> anyhow::Result<String> {
@@ -747,44 +832,28 @@ fn main() -> anyhow::Result<()> {
                 println!("{}", lex_line);
             }
 
+            
+
             // ykw? i feel like hash_maker and dref part and all should go inside val_parser
             let lexed = lexer(lex)?;
 
-            let mut variables = hash_maker(&lexed)?;
+            let dref_files: Vec<String> = dref_parser(&lexed, &make_arg.ref_src)?;
 
-            // create dref-exclusive function and make it recursive so dref in dref file can be read
-            if general_func::does_contain_string(&lexed, "dref".to_string()) {
-                let mut dref_line: Vec<String> = Vec::new();
-                if let Ok(lines) = general_func::read_file(val_parser(&vec![dref_parser(&lexed)?], &HashMap::new(), &make_arg)?.join("")) {
-                    for line in lines {
-                        if let Ok(string_line) = line {
-                            dref_line.push(string_line);
-                        }
-                    }
-                } else {
-                    return Err(anyhow::anyhow!("failed to read the path"));
-                }
-                let dref_var = hash_maker(&lexer(dref_line)?)?;
-                for (name, var) in dref_var {
-                    variables.insert(name, var);
-                }
-            }
-
+            let mut variables = hash_maker(&lexed, &dref_files)?;
 
             let lexed = val_parser(&lexed, &variables, &make_arg)?;
 
-
             let parsed = parser(lexed, make_arg.clone().output)?;
 
-            let parsed = parsed.iter()
-                .map(|x| x.from_pre(
-                        if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
-                            y
-                        } else {
-                            vec![String::from("Error pretext")]
-                        }
-                        ))
-                .collect::<Vec<ExecInfo>>();
+            //let parsed = parsed.iter()
+            //    .map(|x| x.from_pre(
+            //            if let Some(y) = val_parser(&vec![x.pretext.clone()], &variables, &make_arg).ok() {
+            //                y
+            //            } else {
+            //                vec![String::from("Error pretext")]
+            //            }
+            //            ))
+            //    .collect::<Vec<ExecInfo>>();
 
                 exec(parsed)?;
         },

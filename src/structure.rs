@@ -59,15 +59,15 @@ impl MakeArg {
     // this function would come in handy later on.
     // but i don't use for now, therefore commented out.
     // ( sorry for my bad code :< )
-//    pub fn new() -> MakeArg {
-//        MakeArg {
-//            ref_name: String::new(),
-//            pro_name: String::new(),
-//            ref_src:  String::new(),
-//            time_fmt: String::new(),
-//            output:   None,
-//        }
-//    }
+    pub fn new() -> MakeArg {
+        MakeArg {
+            ref_name: String::new(),
+            pro_name: String::new(),
+            ref_src:  String::new(),
+            time_fmt: String::new(),
+            output:   None,
+        }
+    }
 
     pub fn from(reference_name: String,
                 project_name: String,
