@@ -832,9 +832,6 @@ fn main() -> anyhow::Result<()> {
                 println!("{}", lex_line);
             }
 
-            
-
-            // ykw? i feel like hash_maker and dref part and all should go inside val_parser
             let lexed = lexer(lex)?;
 
             let dref_files: Vec<String> = dref_parser(&lexed, &make_arg.ref_src)?;
@@ -895,25 +892,27 @@ fn main() -> anyhow::Result<()> {
                 None => format!("{}/{}", config.reference_path, command.ref_name),
             };
 
-            match editor.as_str() {
+            let mut output = match editor.as_str() {
                 "nvim" => {
                     Command::new("nvim")
                         .arg(path)
                         .spawn()
-                        .with_context(|| format!("failed to execute nvim"))?;
+                        .with_context(|| format!("failed to execute nvim"))?
                 },
 
                 "vim" => {
                     Command::new("vim")
                         .arg(path)
                         .spawn()
-                        .with_context(|| format!("failed to execute nvim"))?;
+                        .with_context(|| format!("failed to execute vim"))?
                 },
 
                 _ => {
                     return Err(anyhow::anyhow!("Error: unsupported text editor"));
                 },
-            }
+            };
+
+            let errorcode = output.wait().expect("jkf");
 
             return Ok(())
         },
