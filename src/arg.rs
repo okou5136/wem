@@ -12,14 +12,14 @@ author="D.A.",
 version="1.0.2 HIV")]
 pub struct Arguments {
     #[clap(subcommand)]
-    pub act: Move,
+    pub act: Action,
 
-    #[clap(short='c', long="config")]
+    #[clap(short='c', long="config", global = true)]
     pub conf_path: Option<String>
 }
 
 #[derive(Debug,Subcommand)]
-pub enum Move {
+pub enum Action {
     ///load wem script and generate files
     Make(MakeCommand),
 

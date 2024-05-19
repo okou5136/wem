@@ -797,7 +797,7 @@ fn main() -> anyhow::Result<()> {
         .with_context(|| format!("failed to read config file"))?;
 
     match arg.act {
-        Move::Make(command) => {
+        Action::Make(command) => {
             make_arg = MakeArg::from(command.reference_name.clone(),
             if let Some(pro_name) = command.project_name {
                 pro_name
@@ -855,7 +855,7 @@ fn main() -> anyhow::Result<()> {
                 exec(parsed)?;
         },
 
-        Move::List(command) => {
+        Action::List(command) => {
             let reference = if let Some(ref_path) = command.reference_path {
                 ref_path
             } else {
@@ -865,7 +865,7 @@ fn main() -> anyhow::Result<()> {
             return Ok(());
         },
         
-        Move::Read(command) => {
+        Action::Read(command) => {
             let  file = File::create(match command.output {
                 Some(x) => format!("{}/{}", config.reference_path, x),
                 None => format!("{}/{}", config.reference_path, &command.ref_name),
@@ -881,7 +881,7 @@ fn main() -> anyhow::Result<()> {
 
             return Ok(());
         },
-        Move::Mod(command) => {
+        Action::Mod(command) => {
             let editor = match command.editor {
                 Some(x) => x,
                 None => config.editor,

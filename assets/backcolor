@@ -1,105 +1,4 @@
-desc: "backup file for my website color"
 def: {
-1 = "<!DOCTYPE html>
-<html lang=\"en\">
-    <head>
-        <meta charset=\"UTF-8\">
-        <meta name=\"viewport\" content=\"width=device-width\" initial-scale=\"1.0\">
-        <script src=\"js/index.js\"></script>
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\">
-        <title>color</title>
-    </head>
-    <body>
-        <div id=\"side-bars\">
-            <div id=\"thin\"></div>
-            <div id=\"thick\"></div>
-        </div>
-        <div id=\"flame\">
-            <ul id=\"menu\">
-                <li>
-                    <h4>Home</h4>
-                </li>
-                <li>
-                    <a href=\"./content.html\">Content</a>
-                </li>
-                <li>
-                    <h4>About</h4>
-                </li>
-            </ul>
-            <div id=\"main\">
-                <h2 class=\"title\">Rules</h2>
-                <p>This website is actually the fourth version of my official website \"Dan's Place\".
-                However, as the last website was hacked and there was no way to fix the damage it managed to cause,
-                I decided to create a brand-new website with better security and prettier design.
-                </p>
-                <p>Anyway, here is my Lorem ipsum for testing purpose.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-        </div>
-    </body>
-</html>
-"
-2 = ":root {
-    --bg-color: white;
-    --sidebar-thick: #B5495B;
-    --sidebar-thin: #F16078;
-    --main-text: #363530;
-    --title-text: #303436;
-    --sub-text: #363031;
-    --link-before: #48B59A;
-    --link-after: #313630;
-    --sidebar-width: 5\%;
-    --navi-width: 15\%;
-}
-body {
-    padding: 0;
-    margin: 0;
-    color: var(--main-text);
-}
-#side-bars {
-    position: fixed;
-    top:0;
-    left: 0;
-    height: 100\%;
-    width: var(--sidebar-width);
-}
-#side-bars #thick {
-    display: block;
-    position: absolute;
-    background-color: var(--sidebar-thick);
-    top: 0;
-    left: 0;
-    height: 100\%;
-    width: 50\%;
-}
-#side-bars #thin {
-    display: block;
-    position: absolute;
-    background-color: var(--sidebar-thin);
-    top: 0;
-    right: 0;
-    height: 100\%;
-    width: 50\%;
-}
-#menu {
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 100\%;
-    width: var(--navi-width);
-}
-#menu ul  {
-    list-style-type: none;
-}
-#flame {
-    position: absolute;
-    top: 0;
-    left: var(--sidebar-width);
-    padding-left: 5\%;
-    padding-right: 5\%;
-    width: calc(90\% - var(--navi-width) - var(--sidebar-width));
-}
-"
 0 = "<!DOCTYPE html>
 <html lang=\"en\">
     <head>
@@ -107,45 +6,16 @@ body {
         <meta name=\"viewport\" content=\"width=device-width\" initial-scale=\"1.0\">
         <script src=\"js/index.js\"></script>
         <link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\">
-        <title>color</title>
-    </head>
-    <body>
-        <div id=\"side-bars\">
-            <div id=\"thin\"></div>
-            <div id=\"thick\"></div>
-        </div>
-        <div id=\"flame\">
-            <ul id=\"menu\">
-                <li>
-                    <h4>Home</h4>
-                </li>
-                <li>
-                    <a href=\"./content.html\">Content</a>
-                </li>
-                <li>
-                    <h4>About</h4>
-                </li>
-            </ul>
-            <div id=\"main\">
-                <h2 class=\"title\">Content</h2>
-                <p>This website is actually the fourth version of my official website \"Dan's Place\".
-                However, as the last website was hacked and there was no way to fix the damage it managed to cause,
-                I decided to create a brand-new website with better security and prettier design.
-                </p>
-                <p>Anyway, here is my Lorem ipsum for testing purpose.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-        </div>
-    </body>
-</html>
-"
-3 = "<!DOCTYPE html>
-<html lang=\"en\">
-    <head>
-        <meta charset=\"UTF-8\">
-        <meta name=\"viewport\" content=\"width=device-width\" initial-scale=\"1.0\">
-        <script src=\"js/index.js\"></script>
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\">
+        <noscript>
+            <style>
+                #dark-mode-toggle {
+                    display:none;
+                }
+                #nav_toggle {
+                    width: 100\%;
+                }
+            </style>
+        </noscript>
         <title>color</title>
     </head>
     <body>
@@ -155,48 +25,54 @@ body {
         </div>
         <div id=\"flame\">
             <div id=\"main\">
-                <h2 class=\"title\">Welcome</h2>
-                <p>This website is actually the fourth version of my official website \"Dan's Place\".
-                However, as the last website was hacked and there was no way to fix the damage it managed to cause,
-                I decided to create a brand-new website with better security and prettier design.
+                <h2 class=\"title\" id=\"art-welcome\">Welcome</h2>
+                <p>Welcome to my personal website!
                 </p>
-                <p>Anyway, here is my Lorem ipsum for testing purpose.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>On this website, You can get information about the programs I've made,
+                or read the blogs of me struggling to understand the simplest of topics about the cyber security and programming
+                and feel surperiority!
+                </p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <h2 class=\"title\" id=\"art-image-check\">Image Test</h2>
+                <p>just testing image</p>
+                <img src=\"\" alt=\"\">
+                <h2 class=\"title\" id=\"art-disclaimer\">Disclaimer</h2>
+                <p>be sure to check <a href=\"./rules.html\">rules</a> before reading further.</p>
             </div>
         </div>
         <div id=\"menu\">
-            <ul>
-                <li>
-                    <h4>Home</h4>
+            <ul id=\"switch\">
+                <li id=\"nav-list\">
+                    <button id=\"nav-toggle\">Menu</button>
+                    <ul id=\"site-nav\">
+                        <li>
+                            <a href=\"./index.html\">Home</a>
+                        </li>
+                        <li>
+                            <a href=\"./content.html\">Content</a>
+                        </li>
+                        <li>
+                            <a href=\"./about.html\">About</a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
-                    <a href=\"./content.html\">Content</a>
-                </li>
-                <li>
-                    <h4>About</h4>
+                    <button id=\"dark-mode-toggle\" onclick=\"darkModeToggle()\">Toggle</button>
                 </li>
             </ul>
+            <div id=\"table-of-contents\">
+                <ol>
+                    <li><a href=\"#art-welcome\"><span>Welcome</span></a></li>
+                    <li><a href=\"#art-image-test\"><span>Image Test</span></a></li>
+                    <li><a href=\"#art-disclaimer\"><span>Disclaimer</span></a></li>
+                </ol>
+            </div>
         </div>
     </body>
 </html>
 "
 }
 
-dir:color {
-   dir:resource {
-      dir:misc
-      dir:image {
-         dir:icon
-      }
-   }
-   file(pre: "%0%"):content.html
-   dir:js {
-      file:index.js
-   }
-   file(pre: "%1%"):rules.html
-   dir:css {
-      file(pre: "%2%"):index.css
-   }
-   file(pre: "%3%"):index.html
-}
+file(pre: "%0%"):index.html
 
