@@ -11,7 +11,7 @@ use anyhow::Context;
 use chrono;
 use std::env;
 use std::fs::{self, File};
-use std::io::{BufWriter, Write};
+use std::io::{self, BufWriter, Write};
 use std::path::Path;
 use std::collections::*;
 use std::time::Instant;
@@ -915,6 +915,30 @@ fn main() -> anyhow::Result<()> {
             let errorcode = output.wait().expect("jkf");
 
             return Ok(())
+        },
+        Action::Rm(command) => {
+            let ref_path = if let Some(x) = command.ref_path {
+                format!("{}/{}", x, command.ref_name)
+            } else {
+                format!("{}/{}", config.reference_path, command.ref_name)
+            };
+
+            if let Ok(_) = fs::metadata(&ref_path) {
+                println!("Are you sure you want to delete {}?", &ref_path); 
+                let mut buffer = String::new();
+                io::stdin().read_line(&mut buffer)?;
+
+                if buffer == "Y" || buffer == "yes" || buffer == "YES" {
+                    println!("deleting the file ...");
+                } else {
+                    println!("operation cancelled");
+                }
+            }
+
+
+            fs::remove_file(ref_path)?;
+
+            return Ok(());
         },
     }
     Ok(())

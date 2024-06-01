@@ -31,6 +31,8 @@ pub enum Action {
 
     ///modify a selected wem script
     Mod(ModCommand),
+
+    Rm(RmCommand),
 }
 
 #[derive(Debug, Args)]
@@ -50,7 +52,7 @@ pub struct MakeCommand {
     pub time_format: Option<String>,
 
     ///path where you want to generate the files for
-    #[clap(short='o', long="output")]
+    #[clap(short='o', long="output", global=true)]
     pub output: Option<String>,
 }
 
@@ -83,4 +85,18 @@ pub struct ModCommand {
 
     #[clap(short='p', long="path")]
     pub ref_path: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub struct RmCommand {
+    pub ref_name: String,
+    
+    #[clap(short='p', long="path")]
+    pub ref_path: Option<String>,
+
+    #[clap(short='y', long="yes-to-all")]
+    pub confirm_every_question: bool,
+
+    #[clap(long="not-keep-backup", global=true)]
+    pub not_keep_backup: bool,
 }
