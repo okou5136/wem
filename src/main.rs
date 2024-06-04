@@ -836,7 +836,7 @@ fn main() -> anyhow::Result<()> {
 
             let dref_files: Vec<String> = dref_parser(&lexed, &make_arg.ref_src)?;
 
-            let mut variables = hash_maker(&lexed, &dref_files)?;
+            let  variables = hash_maker(&lexed, &dref_files)?;
 
             let lexed = val_parser(&lexed, &variables, &make_arg)?;
 
@@ -928,10 +928,11 @@ fn main() -> anyhow::Result<()> {
                 let mut buffer = String::new();
                 io::stdin().read_line(&mut buffer)?;
 
-                if buffer == "Y" || buffer == "yes" || buffer == "YES" {
+                if buffer.trim() == "Y" || buffer.trim() == "yes" || buffer.trim() == "YES" {
                     println!("deleting the file ...");
                 } else {
                     println!("operation cancelled");
+                    return Ok(());
                 }
             }
 

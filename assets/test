@@ -1,7 +1,0 @@
-desc:"just an test for value"
-
-dref:fileinfo.wdv
-
-dir:%NAME% {
-    file(pre:"%dreffing%"):dreffing
-}
